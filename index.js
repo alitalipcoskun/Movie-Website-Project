@@ -47,6 +47,13 @@ const onInput = async (event) => {
             <img src = "${imgSrc}">
             ${movie.Title}
         `;
+        option.addEventListener('click', () => {
+            dropdown.classList.remove('is-active');// After selecting the film, searchbar will get removed.
+            input.value  = movie.Title;//Clicked film will be in searchbar's text.
+            onMovieSelect(movie);
+
+        });
+
         resultWrapper.appendChild(option);
     }
     
@@ -58,3 +65,33 @@ document.addEventListener('click', event => {
         dropdown.classList.remove('is-active');//it will help us to close it.
     }
 }); //It has been added in order to get rid of the filmwrapper while user click different part of page.
+
+
+const onMovieSelect = async movie  => {
+    const response = await axios.get('http://www.omdbapi.com/', {
+        params: {
+         apikey: 'ed5d53dd',
+         i: movie.imdbID,
+        } 
+     });
+     document.querySelector('#summary').innerHTML = movieTemplate(response.data);
+};
+
+const movieTemplate = (movieDetail) => {
+    return `
+        <article class = "media">
+            <figure class = "media-left">
+                <p class = "image">
+                    <img src = "${movieDetail.Poster}"/>
+                </p>
+            </figure>   
+            <div class = "media-content">
+                <div class = "content">
+                    <h1> ${movieDetail.Title}</h1>
+                    <h4>${movieDetail.Genre}</h4>
+                    <p>${movieDetail.Plot}</p>
+                </div>
+            </div>
+        </article>
+    `;
+};

@@ -17,14 +17,16 @@ const fetchData = async (searchTerm) => {
 
 
 createAutoComplete({
-    root : document.querySelector('div .autocomplete')
+    root : document.querySelector('div .autocomplete'),
+    renderOption(movie){
+        const imgSrc = movie.Poster === 'N/A' ? '': movie.Poster;//Checking for empty image, rather than getting error message.
+        return `
+            <img src = "${imgSrc}">
+            ${movie.Title} (${movie.Year})
+        `;
+    },
 });
-createAutoComplete({
-    root : document.querySelector('div .autocomplete-two')
-});
-createAutoComplete({
-    root : document.querySelector('div .autocomplete-three')
-});
+
 
 
 const onMovieSelect = async movie  => {

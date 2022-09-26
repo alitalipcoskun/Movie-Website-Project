@@ -1,23 +1,4 @@
-
-
-const fetchData = async (searchTerm) => {
-    const response = await axios.get('http://www.omdbapi.com/', {
-       params: {
-        apikey: 'ed5d53dd',
-        s: `${searchTerm}`
-       } 
-    });
-    
-    if(response.data.Error){
-        return [];
-    }
-
-    return response.data.Search;
-};
-
-
-createAutoComplete({
-    root : document.querySelector('div .autocomplete'),
+const autocompleteConfig = {
     renderOption(movie){
         const imgSrc = movie.Poster === 'N/A' ? '': movie.Poster;//Checking for empty image, rather than getting error message.
         return `
@@ -25,19 +6,72 @@ createAutoComplete({
             ${movie.Title} (${movie.Year})
         `;
     },
+    inputValue(movie){
+        return movie.Title;
+    },
+    async fetchData(searchTerm){
+        const response = await axios.get('http://www.omdbapi.com/', {
+           params: {
+            apikey: 'ed5d53dd',
+            s: `${searchTerm}`
+           } 
+        });
+        
+        if(response.data.Error){
+            return [];
+        }
+    
+        return response.data.Search;
+    }
+}
+
+
+
+
+createAutoComplete({
+    ...autocompleteConfig,
+    root : document.querySelector('div #left-autocomplete'),
+    onOptionSelect(movie){
+        document.querySelector('.tutorial').classList.add('is-hidden');
+        onMovieSelect(movie, document.querySelector('#left-summary'), 'left');
+    },
+});
+createAutoComplete({
+    ...autocompleteConfig,
+    root : document.querySelector('div #right-autocomplete'),
+    onOptionSelect(movie){
+        document.querySelector('.tutorial').classList.add('is-hidden');
+        onMovieSelect(movie, document.querySelector('#right-summary'), 'right');
+    },
 });
 
 
 
-const onMovieSelect = async movie  => {
+let leftMovie;
+let rightMovie;
+const onMovieSelect = async (movie, summaryElement,side)  => {
     const response = await axios.get('http://www.omdbapi.com/', {
         params: {
          apikey: 'ed5d53dd',
          i: movie.imdbID,
         } 
      });
-     document.querySelector('#summary').innerHTML = movieTemplate(response.data);
+     summaryElement.innerHTML = movieTemplate(response.data);
+
+     if(side === 'left'){
+        leftMovie = response.data;
+     }else{
+        rightMovie = response.data;
+     }
+
+     if(leftMovie && rightMovie){
+        runComparison();
+     }
 };
+
+const runComparison = () => {
+    console.log('Comparison is working!');
+}
 
 const movieTemplate = (movieDetail) => {
     return `

@@ -39,7 +39,7 @@ const onInput = async (event) => {
 };
 input.addEventListener('input', debounce(onInput, 500))
 document.addEventListener('click', event => {
-    console.log(event.target);// it will allow us the element when we click.
+    //console.log(event.target);// it will allow us the element when we click.
     if(!root.contains(event.target)){//root is the searchbar.
         dropdown.classList.remove('is-active');//it will help us to close it.
     }
